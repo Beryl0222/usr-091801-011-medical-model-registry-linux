@@ -1,6 +1,7 @@
 .env
 *.key
 *.pem
+ledger*.json
 node_modules/
 .venv/
 venv/
