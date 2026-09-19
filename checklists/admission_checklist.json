@@ -1,0 +1,30 @@
+{
+  "version": "2026.09.1",
+  "description": "腹部 CT 开源模型本地准入评估清单：按病种与急诊亚组逐项判定，任何亚组不足都不能被总体平均掩盖；指标不足只能进入观察或驳回。",
+  "required_subgroups": ["急诊", "非急诊"],
+  "default_rule": {
+    "min_sample_size": 40,
+    "min_sensitivity": 0.85,
+    "min_specificity": 0.8,
+    "min_auc": 0.8,
+    "min_sensitivity_ci_lower": 0.7,
+    "min_auc_ci_lower": 0.7,
+    "borderline_margin": 0.03
+  },
+  "disease_rules": {
+    "脾破裂": {
+      "min_sensitivity": 0.95,
+      "min_sensitivity_ci_lower": 0.8
+    },
+    "腹主动脉瘤": {
+      "min_sensitivity": 0.92,
+      "min_sensitivity_ci_lower": 0.75
+    }
+  },
+  "drift": {
+    "window_size": 40,
+    "min_window_events": 20,
+    "max_override_rate": 0.2,
+    "max_miss_rate": 0.06
+  }
+}

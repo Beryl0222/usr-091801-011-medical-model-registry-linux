@@ -1,0 +1,134 @@
+{
+  "description": "模拟三家医院试用开源腹部 CT 模型的完整流程：本地验证复算、反馈漂移降级、双人审批调阈值、线上调用核对。数据为模拟指标，仅用于复算与回放。",
+  "hospitals": [
+    {"hospital_id": "HOSP-A", "name": "医院甲"},
+    {"hospital_id": "HOSP-B", "name": "医院乙"},
+    {"hospital_id": "HOSP-C", "name": "医院丙"}
+  ],
+  "releases": [
+    {
+      "ref": "R1",
+      "model_name": "abdomen-ct-open",
+      "model_version": "1.3.0",
+      "code_ref": "github://example/abdomen-ct@abc123",
+      "weights_hash": "sha256:9f2ca1b7e0d44f01aa11c0de0011aa000001",
+      "runtime_env": "python3.11/onnxruntime1.16/cuda12.2",
+      "thresholds": {"default": 0.5, "脾破裂": 0.45},
+      "applicable_organs": ["肝", "胆", "胰", "脾", "肾", "腹主动脉"],
+      "scan_protocols": ["增强CT", "平扫CT"],
+      "contraindications": ["儿童腹部扫描", "床旁低剂量扫描"]
+    }
+  ],
+  "timeline": [
+    {
+      "at": "2026-01-10T09:00:00Z",
+      "type": "validation",
+      "hospital_id": "HOSP-A",
+      "release_ref": "R1",
+      "actor": "eng.hosp-a",
+      "records": [
+        {"disease": "肝血管瘤", "subgroup": "急诊", "sample_size": 52, "sensitivity": 0.9, "specificity": 0.88, "auc": 0.91, "sensitivity_ci": [0.79, 0.96], "specificity_ci": [0.76, 0.95], "auc_ci": [0.83, 0.96]},
+        {"disease": "肝血管瘤", "subgroup": "非急诊", "sample_size": 120, "sensitivity": 0.93, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.87, 0.97], "specificity_ci": [0.83, 0.94], "auc_ci": [0.89, 0.97]},
+        {"disease": "急性胰腺炎", "subgroup": "急诊", "sample_size": 48, "sensitivity": 0.92, "specificity": 0.86, "auc": 0.92, "sensitivity_ci": [0.8, 0.98], "specificity_ci": [0.73, 0.94], "auc_ci": [0.84, 0.97]},
+        {"disease": "急性胰腺炎", "subgroup": "非急诊", "sample_size": 96, "sensitivity": 0.9, "specificity": 0.88, "auc": 0.92, "sensitivity_ci": [0.82, 0.95], "specificity_ci": [0.8, 0.93], "auc_ci": [0.86, 0.96]},
+        {"disease": "脾破裂", "subgroup": "急诊", "sample_size": 45, "sensitivity": 0.96, "specificity": 0.91, "auc": 0.95, "sensitivity_ci": [0.86, 0.995], "specificity_ci": [0.79, 0.97], "auc_ci": [0.88, 0.99]},
+        {"disease": "脾破裂", "subgroup": "非急诊", "sample_size": 60, "sensitivity": 0.97, "specificity": 0.92, "auc": 0.96, "sensitivity_ci": [0.89, 0.996], "specificity_ci": [0.82, 0.97], "auc_ci": [0.9, 0.99]},
+        {"disease": "腹主动脉瘤", "subgroup": "急诊", "sample_size": 42, "sensitivity": 0.95, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.83, 0.99], "specificity_ci": [0.77, 0.97], "auc_ci": [0.86, 0.98]},
+        {"disease": "腹主动脉瘤", "subgroup": "非急诊", "sample_size": 88, "sensitivity": 0.94, "specificity": 0.91, "auc": 0.95, "sensitivity_ci": [0.87, 0.98], "specificity_ci": [0.83, 0.96], "auc_ci": [0.9, 0.98]}
+      ]
+    },
+    {
+      "at": "2026-01-12T09:00:00Z",
+      "type": "validation",
+      "hospital_id": "HOSP-B",
+      "release_ref": "R1",
+      "actor": "eng.hosp-b",
+      "records": [
+        {"disease": "肝血管瘤", "subgroup": "急诊", "sample_size": 55, "sensitivity": 0.91, "specificity": 0.87, "auc": 0.92, "sensitivity_ci": [0.8, 0.97], "specificity_ci": [0.75, 0.94], "auc_ci": [0.84, 0.97]},
+        {"disease": "肝血管瘤", "subgroup": "非急诊", "sample_size": 110, "sensitivity": 0.92, "specificity": 0.89, "auc": 0.93, "sensitivity_ci": [0.85, 0.96], "specificity_ci": [0.82, 0.94], "auc_ci": [0.88, 0.97]},
+        {"disease": "急性胰腺炎", "subgroup": "急诊", "sample_size": 36, "sensitivity": 0.83, "specificity": 0.85, "auc": 0.88, "sensitivity_ci": [0.67, 0.93], "specificity_ci": [0.69, 0.94], "auc_ci": [0.76, 0.95]},
+        {"disease": "急性胰腺炎", "subgroup": "非急诊", "sample_size": 90, "sensitivity": 0.89, "specificity": 0.87, "auc": 0.91, "sensitivity_ci": [0.81, 0.94], "specificity_ci": [0.78, 0.93], "auc_ci": [0.84, 0.95]},
+        {"disease": "脾破裂", "subgroup": "急诊", "sample_size": 44, "sensitivity": 0.95, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.84, 0.99], "specificity_ci": [0.78, 0.96], "auc_ci": [0.86, 0.98]},
+        {"disease": "脾破裂", "subgroup": "非急诊", "sample_size": 58, "sensitivity": 0.96, "specificity": 0.91, "auc": 0.95, "sensitivity_ci": [0.88, 0.99], "specificity_ci": [0.81, 0.96], "auc_ci": [0.89, 0.98]},
+        {"disease": "腹主动脉瘤", "subgroup": "急诊", "sample_size": 41, "sensitivity": 0.93, "specificity": 0.89, "auc": 0.93, "sensitivity_ci": [0.81, 0.98], "specificity_ci": [0.76, 0.96], "auc_ci": [0.85, 0.97]},
+        {"disease": "腹主动脉瘤", "subgroup": "非急诊", "sample_size": 80, "sensitivity": 0.93, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.85, 0.97], "specificity_ci": [0.81, 0.95], "auc_ci": [0.88, 0.97]}
+      ]
+    },
+    {
+      "at": "2026-01-15T09:00:00Z",
+      "type": "validation",
+      "hospital_id": "HOSP-C",
+      "release_ref": "R1",
+      "actor": "eng.hosp-c",
+      "records": [
+        {"disease": "肝血管瘤", "subgroup": "急诊", "sample_size": 60, "sensitivity": 0.95, "specificity": 0.92, "auc": 0.95, "sensitivity_ci": [0.86, 0.99], "specificity_ci": [0.82, 0.97], "auc_ci": [0.89, 0.98]},
+        {"disease": "肝血管瘤", "subgroup": "非急诊", "sample_size": 130, "sensitivity": 0.96, "specificity": 0.93, "auc": 0.96, "sensitivity_ci": [0.91, 0.98], "specificity_ci": [0.87, 0.96], "auc_ci": [0.92, 0.98]},
+        {"disease": "急性胰腺炎", "subgroup": "急诊", "sample_size": 55, "sensitivity": 0.94, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.84, 0.98], "specificity_ci": [0.79, 0.96], "auc_ci": [0.87, 0.98]},
+        {"disease": "急性胰腺炎", "subgroup": "非急诊", "sample_size": 100, "sensitivity": 0.93, "specificity": 0.91, "auc": 0.94, "sensitivity_ci": [0.86, 0.97], "specificity_ci": [0.84, 0.95], "auc_ci": [0.89, 0.97]},
+        {"disease": "脾破裂", "subgroup": "急诊", "sample_size": 50, "sensitivity": 0.97, "specificity": 0.93, "auc": 0.96, "sensitivity_ci": [0.88, 0.997], "specificity_ci": [0.82, 0.98], "auc_ci": [0.9, 0.99]},
+        {"disease": "脾破裂", "subgroup": "非急诊", "sample_size": 66, "sensitivity": 0.98, "specificity": 0.94, "auc": 0.97, "sensitivity_ci": [0.91, 0.998], "specificity_ci": [0.85, 0.98], "auc_ci": [0.92, 0.99]},
+        {"disease": "腹主动脉瘤", "subgroup": "急诊", "sample_size": 50, "sensitivity": 0.62, "specificity": 0.9, "auc": 0.86, "sensitivity_ci": [0.47, 0.75], "specificity_ci": [0.78, 0.96], "auc_ci": [0.76, 0.93]},
+        {"disease": "腹主动脉瘤", "subgroup": "非急诊", "sample_size": 90, "sensitivity": 0.98, "specificity": 0.95, "auc": 0.98, "sensitivity_ci": [0.93, 0.997], "specificity_ci": [0.88, 0.98], "auc_ci": [0.94, 0.996]}
+      ]
+    },
+    {"at": "2026-02-10T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_ref": "R1"},
+    {"at": "2026-02-11T10:00:00Z", "type": "call", "hospital_id": "HOSP-B", "release_ref": "R1"},
+    {"at": "2026-02-12T10:00:00Z", "type": "call", "hospital_id": "HOSP-C", "release_ref": "R1"},
+    {
+      "at": "2026-03-01T08:00:00Z",
+      "type": "feedback",
+      "hospital_id": "HOSP-A",
+      "release_ref": "R1",
+      "events": [
+        {"kind": "adopt", "count": 17},
+        {"kind": "override", "count": 3}
+      ]
+    },
+    {
+      "at": "2026-04-01T08:00:00Z",
+      "type": "feedback",
+      "hospital_id": "HOSP-A",
+      "release_ref": "R1",
+      "events": [
+        {"kind": "adopt", "count": 9},
+        {"kind": "override", "count": 3},
+        {"kind": "miss", "count": 8}
+      ]
+    },
+    {"at": "2026-04-15T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_ref": "R1"},
+    {
+      "at": "2026-04-20T09:00:00Z",
+      "type": "change_request",
+      "ref": "CR1",
+      "yields_ref": "R1B",
+      "hospital_id": "HOSP-A",
+      "kind": "adjust_threshold",
+      "payload": {"new_thresholds": {"default": 0.45, "脾破裂": 0.4}},
+      "evidence_refs": ["last_drift_report"],
+      "requester": "eng.chen"
+    },
+    {"at": "2026-04-21T09:00:00Z", "type": "approve", "request_ref": "CR1", "approver": "rev.li"},
+    {"at": "2026-04-22T09:00:00Z", "type": "approve", "request_ref": "CR1", "approver": "rev.wang"},
+    {"at": "2026-05-03T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_ref": "R1"},
+    {"at": "2026-05-04T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_ref": "R1B"},
+    {
+      "at": "2026-05-10T09:00:00Z",
+      "type": "validation",
+      "hospital_id": "HOSP-A",
+      "release_ref": "R1B",
+      "actor": "eng.hosp-a",
+      "records": [
+        {"disease": "肝血管瘤", "subgroup": "急诊", "sample_size": 54, "sensitivity": 0.91, "specificity": 0.88, "auc": 0.92, "sensitivity_ci": [0.8, 0.97], "specificity_ci": [0.76, 0.95], "auc_ci": [0.84, 0.97]},
+        {"disease": "肝血管瘤", "subgroup": "非急诊", "sample_size": 122, "sensitivity": 0.93, "specificity": 0.9, "auc": 0.94, "sensitivity_ci": [0.87, 0.97], "specificity_ci": [0.83, 0.94], "auc_ci": [0.89, 0.97]},
+        {"disease": "急性胰腺炎", "subgroup": "急诊", "sample_size": 50, "sensitivity": 0.92, "specificity": 0.87, "auc": 0.93, "sensitivity_ci": [0.81, 0.98], "specificity_ci": [0.75, 0.94], "auc_ci": [0.85, 0.97]},
+        {"disease": "急性胰腺炎", "subgroup": "非急诊", "sample_size": 98, "sensitivity": 0.91, "specificity": 0.88, "auc": 0.92, "sensitivity_ci": [0.83, 0.96], "specificity_ci": [0.8, 0.93], "auc_ci": [0.86, 0.96]},
+        {"disease": "脾破裂", "subgroup": "急诊", "sample_size": 47, "sensitivity": 0.96, "specificity": 0.92, "auc": 0.96, "sensitivity_ci": [0.86, 0.995], "specificity_ci": [0.81, 0.97], "auc_ci": [0.89, 0.99]},
+        {"disease": "脾破裂", "subgroup": "非急诊", "sample_size": 62, "sensitivity": 0.97, "specificity": 0.93, "auc": 0.96, "sensitivity_ci": [0.89, 0.996], "specificity_ci": [0.84, 0.97], "auc_ci": [0.91, 0.99]},
+        {"disease": "腹主动脉瘤", "subgroup": "急诊", "sample_size": 44, "sensitivity": 0.95, "specificity": 0.91, "auc": 0.95, "sensitivity_ci": [0.84, 0.99], "specificity_ci": [0.79, 0.97], "auc_ci": [0.87, 0.98]},
+        {"disease": "腹主动脉瘤", "subgroup": "非急诊", "sample_size": 90, "sensitivity": 0.94, "specificity": 0.92, "auc": 0.95, "sensitivity_ci": [0.87, 0.98], "specificity_ci": [0.84, 0.96], "auc_ci": [0.9, 0.98]}
+      ]
+    },
+    {"at": "2026-05-20T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_ref": "R1B"},
+    {"at": "2026-05-21T10:00:00Z", "type": "call", "hospital_id": "HOSP-A", "release_id": "rel-0000000000000000"}
+  ]
+}
